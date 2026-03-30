@@ -5,6 +5,8 @@ import appointmentsRouter from "./routes/appointments.js";
 import subscriptionsRouter from "./routes/subscriptions.js";
 import paymentsRouter from "./routes/payments.js";
 import dashboardRouter from "./routes/dashboard.js";
+import servicesRouter from "./routes/services.js";
+import publicRouter from "./routes/public.js";
 import "./db.js";
 
 const app = express();
@@ -22,6 +24,8 @@ app.use("/api/appointments", appointmentsRouter);
 app.use("/api/subscriptions", subscriptionsRouter);
 app.use("/api/payments", paymentsRouter);
 app.use("/api/dashboard", dashboardRouter);
+app.use("/api/services", servicesRouter);
+app.use("/api/public", publicRouter);
 
 app.use((err, _req, res, _next) => {
   console.error(err);
