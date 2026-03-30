@@ -17,6 +17,9 @@ import {
   handleUpdateAppointment,
   handleEditAppointment,
   handleCancelEditAppointment,
+  handleFilterAppointments,
+  handleCompleteAppointment,
+  handleCancelAppointment,
 } from "./appointments.js";
 import { handleCreatePayment } from "./payments.js";
 
@@ -62,6 +65,9 @@ document.addEventListener("click", async (e) => {
     else if (action === "delete-client")             await handleDeleteClient(btn);
     else if (action === "edit-appointment")          await handleEditAppointment(btn);
     else if (action === "cancel-edit-appointment")       handleCancelEditAppointment();
+    else if (action === "filter-appointments")           handleFilterAppointments(btn);
+    else if (action === "complete-appointment")      await handleCompleteAppointment(btn);
+    else if (action === "cancel-appointment")        await handleCancelAppointment(btn);
   } catch (err) {
     toast.error(err.message || String(err));
   }
