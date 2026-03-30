@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agendar — Barber Elias</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { slate: { 950: '#0f172a' } } } }
+    }
+  </script>
+  <style>
+    body { background: #0f172a; color: #f1f5f9; font-family: sans-serif; }
+    .step { display: none; }
+    .step.active { display: block; }
+    .service-card { cursor: pointer; border: 2px solid #334155; border-radius: 12px; padding: 16px; transition: border-color 0.15s; }
+    .service-card.selected { border-color: #f59e0b; background: #1c1a0a; }
+    .slot-btn { border: 1px solid #334155; border-radius: 8px; padding: 8px 12px; font-size: 0.85rem; cursor: pointer; background: #1e293b; color: #f1f5f9; transition: background 0.15s; }
+    .slot-btn:hover:not(:disabled) { background: #334155; }
+    .slot-btn.selected { background: #f59e0b; color: #0f172a; font-weight: 600; border-color: #f59e0b; }
+    .slot-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .progress-bar { display: flex; gap: 4px; margin-bottom: 24px; }
+    .progress-dot { flex: 1; height: 4px; border-radius: 2px; background: #334155; transition: background 0.2s; }
+    .progress-dot.done { background: #f59e0b; }
+    input[type="date"] { color-scheme: dark; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center px-4 py-8">
+
+  <div class="w-full max-w-sm">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="text-xs uppercase tracking-widest text-amber-400 mb-1">Barbearia</div>
+      <h1 class="text-2xl font-bold text-white">BARBER ELIAS</h1>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-bar" id="progress">
+      <div class="progress-dot" id="dot-1"></div>
+      <div class="progress-dot" id="dot-2"></div>
+      <div class="progress-dot" id="dot-3"></div>
+      <div class="progress-dot" id="dot-4"></div>
+    </div>
+
+    <!-- STEP 1: Telefone -->
+    <div class="step active" data-step="1">
+      <h2 class="text-lg font-semibold mb-1">Qual é o seu WhatsApp?</h2>
+      <p class="text-sm text-slate-400 mb-4">Vamos te identificar para confirmar o agendamento.</p>
+      <input id="input-telefone" type="tel" placeholder="Ex.: 11999999999"
+        class="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white mb-3" />
+      <div id="wrap-nome" class="hidden mb-3">
+        <p class="text-sm text-slate-400 mb-2">Não te encontramos. Qual é o seu nome?</p>
+        <input id="input-nome" type="text" placeholder="Seu nome completo"
+          class="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white" />
+      </div>
+      <button id="btn-continuar" onclick="handleStep1()"
+        class="w-full rounded-lg bg-amber-500 px-4 py-3 font-semibold text-slate-950 hover:bg-amber-400">
+        Continuar →
+      </button>
+      <p id="err-1" class="mt-2 text-sm text-rose-400 hidden"></p>
+    </div>
+
+    <!-- STEP 2: Serviço -->
+    <div class="step" data-step="2">
+      <h2 class="text-lg font-semibold mb-1" id="saudacao">O que você vai fazer hoje?</h2>
+      <p class="text-sm text-slate-400 mb-4">Toque no serviço para selecionar.</p>
+      <div id="services-list" class="grid gap-3 mb-4"></div>
+      <button onclick="goStep(3)"
+        class="w-full rounded-lg bg-amber-500 px-4 py-3 font-semibold text-slate-950 hover:bg-amber-400 disabled:opacity-40"
+        id="btn-step2-next" disabled>
+        Próximo →
+      </button>
+      <button onclick="goStep(1)" class="mt-2 w-full text-sm text-slate-400 hover:text-white">← Voltar</button>
+      <p id="err-2" class="mt-2 text-sm text-rose-400 hidden"></p>
+    </div>
+
+    <!-- STEP 3: Data e Horário -->
+    <div class="step" data-step="3">
+      <h2 class="text-lg font-semibold mb-1">Quando você quer vir?</h2>
+      <p class="text-sm text-slate-400 mb-4">Escolha a data e o horário disponível.</p>
+      <input id="input-date" type="date"
+        class="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white mb-4"
+        onchange="loadSlots(this.value)" />
+      <div id="slots-wrap" class="hidden">
+        <p class="text-xs uppercase text-slate-500 mb-2">Horários disponíveis</p>
+        <div id="slots-grid" class="flex flex-wrap gap-2 mb-4"></div>
+      </div>
+      <p id="slots-empty" class="hidden text-sm text-slate-400 mb-4">Nenhum horário disponível nesta data.</p>
+      <button onclick="goStep(4)"
+        class="w-full rounded-lg bg-amber-500 px-4 py-3 font-semibold text-slate-950 hover:bg-amber-400 disabled:opacity-40"
+        id="btn-step3-next" disabled>
+        Próximo →
+      </button>
+      <button onclick="goStep(2)" class="mt-2 w-full text-sm text-slate-400 hover:text-white">← Voltar</button>
+    </div>
+
+    <!-- STEP 4: Confirmação -->
+    <div class="step" data-step="4">
+      <h2 class="text-lg font-semibold mb-1" id="confirm-title">Tudo certo! ✂️</h2>
+      <p class="text-sm text-slate-400 mb-4">Confira os detalhes antes de confirmar.</p>
+      <div class="rounded-xl border border-slate-700 bg-slate-900 p-4 mb-4 grid gap-2 text-sm">
+        <div class="flex justify-between"><span class="text-slate-400">Serviço</span><span id="sum-servico" class="text-white font-medium"></span></div>
+        <div class="flex justify-between"><span class="text-slate-400">Data</span><span id="sum-data" class="text-white font-medium"></span></div>
+        <div class="flex justify-between"><span class="text-slate-400">Horário</span><span id="sum-hora" class="text-white font-medium"></span></div>
+        <div class="flex justify-between"><span class="text-slate-400">Duração</span><span id="sum-duracao" class="text-white font-medium"></span></div>
+      </div>
+      <button onclick="confirmarAgendamento()"
+        class="w-full rounded-lg bg-amber-500 px-4 py-3 font-semibold text-slate-950 hover:bg-amber-400">
+        ✅ Confirmar agendamento
+      </button>
+      <button onclick="goStep(3)" class="mt-2 w-full text-sm text-slate-400 hover:text-white">← Voltar e corrigir</button>
+      <p id="err-4" class="mt-2 text-sm text-rose-400 hidden"></p>
+    </div>
+
+    <!-- STEP 5: Sucesso -->
+    <div class="step" data-step="5">
+      <div class="text-center py-8">
+        <div class="text-5xl mb-4">✂️</div>
+        <h2 class="text-xl font-bold text-white mb-2">Agendado com sucesso!</h2>
+        <p class="text-slate-400 mb-6" id="success-msg"></p>
+        <button onclick="reiniciar()"
+          class="rounded-lg bg-amber-500 px-6 py-3 font-semibold text-slate-950 hover:bg-amber-400">
+          Fazer outro agendamento
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      step: 1,
+      client: null,
+      service: null,
+      date: "",
+      time: "",
+    };
+
+    const API = "/api/public";
+
+    function showStep(n) {
+      state.step = n;
+      document.querySelectorAll(".step").forEach(el => el.classList.remove("active"));
+      document.querySelector(`[data-step="${n}"]`).classList.add("active");
+      for (let i = 1; i <= 4; i++) {
+        const dot = document.getElementById(`dot-${i}`);
+        if (dot) dot.classList.toggle("done", i < n || (i === n && n <= 4));
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function goStep(n) {
+      if (n === 4) {
+        const d = new Date(`${state.date}T${state.time}`);
+        const dataFormatada = d.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+        document.getElementById("confirm-title").textContent = `Tudo certo, ${state.client.nome}! ✂️`;
+        document.getElementById("sum-servico").textContent = state.service.nome;
+        document.getElementById("sum-data").textContent = dataFormatada;
+        document.getElementById("sum-hora").textContent = state.time;
+        document.getElementById("sum-duracao").textContent = `~${state.service.duracao_minutos} min`;
+      }
+      showStep(n);
+    }
+
+    function showErr(id, msg) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = msg;
+      el.classList.remove("hidden");
+      setTimeout(() => el.classList.add("hidden"), 4000);
+    }
+
+    // Step 1
+    async function handleStep1() {
+      const telefone = document.getElementById("input-telefone").value.trim();
+      if (!telefone) return showErr("err-1", "Informe seu WhatsApp.");
+
+      const wrapNome = document.getElementById("wrap-nome");
+      const inputNome = document.getElementById("input-nome");
+      const nomeVisible = !wrapNome.classList.contains("hidden");
+
+      try {
+        if (!nomeVisible) {
+          const res = await fetch(`${API}/identify`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ telefone }),
+          });
+          const data = await res.json();
+          if (!res.ok) return showErr("err-1", data.error || "Erro ao identificar.");
+
+          if (data.found) {
+            state.client = data.client;
+            localStorage.setItem("barber_telefone", telefone);
+            avancarStep2();
+          } else {
+            wrapNome.classList.remove("hidden");
+            inputNome.focus();
+            document.getElementById("btn-continuar").textContent = "Cadastrar e continuar →";
+          }
+        } else {
+          const nome = inputNome.value.trim();
+          if (!nome) return showErr("err-1", "Informe seu nome.");
+          const res = await fetch(`${API}/clients`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nome, telefone }),
+          });
+          const data = await res.json();
+          if (!res.ok) return showErr("err-1", data.error || "Erro ao cadastrar.");
+          state.client = data;
+          localStorage.setItem("barber_telefone", telefone);
+          avancarStep2();
+        }
+      } catch {
+        showErr("err-1", "Erro de conexão. Tente novamente.");
+      }
+    }
+
+    async function avancarStep2() {
+      document.getElementById("saudacao").textContent = `Olá, ${state.client.nome}! O que você vai fazer hoje?`;
+      const res = await fetch(`${API}/services`);
+      const services = await res.json();
+      const list = document.getElementById("services-list");
+      list.innerHTML = services.map(s => `
+        <div class="service-card" data-id="${s.id}" data-nome="${s.nome}" data-preco="${s.preco}" data-dur="${s.duracao_minutos}"
+          onclick="selectService(this)">
+          <div class="flex justify-between items-center">
+            <span class="font-medium text-white">${s.nome}</span>
+            <span class="text-amber-400 font-semibold">R$ ${s.preco.toFixed(2).replace(".", ",")}</span>
+          </div>
+          <div class="text-xs text-slate-400 mt-1">${s.duracao_minutos} min</div>
+        </div>
+      `).join("");
+      showStep(2);
+    }
+
+    function selectService(card) {
+      document.querySelectorAll(".service-card").forEach(c => c.classList.remove("selected"));
+      card.classList.add("selected");
+      state.service = {
+        id: card.dataset.id,
+        nome: card.dataset.nome,
+        preco: parseFloat(card.dataset.preco),
+        duracao_minutos: parseInt(card.dataset.dur),
+      };
+      document.getElementById("btn-step2-next").disabled = false;
+    }
+
+    // Step 3
+    async function loadSlots(date) {
+      state.date = date;
+      state.time = "";
+      document.getElementById("btn-step3-next").disabled = true;
+
+      const res = await fetch(`${API}/slots?date=${date}&serviceId=${state.service.id}`);
+      const slots = await res.json();
+
+      const grid = document.getElementById("slots-grid");
+      const wrap = document.getElementById("slots-wrap");
+      const empty = document.getElementById("slots-empty");
+
+      if (!slots.length) {
+        wrap.classList.add("hidden");
+        empty.classList.remove("hidden");
+        return;
+      }
+
+      empty.classList.add("hidden");
+      wrap.classList.remove("hidden");
+      grid.innerHTML = slots.map(s => `
+        <button class="slot-btn" onclick="selectSlot(this, '${s}')">${s}</button>
+      `).join("");
+    }
+
+    function selectSlot(btn, time) {
+      document.querySelectorAll(".slot-btn").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      state.time = time;
+      document.getElementById("btn-step3-next").disabled = false;
+    }
+
+    async function confirmarAgendamento() {
+      try {
+        const res = await fetch(`${API}/appointments`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            clientId: state.client.id,
+            serviceId: state.service.id,
+            date: state.date,
+            time: state.time,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) return showErr("err-4", data.error || "Erro ao agendar.");
+
+        const d = new Date(`${state.date}T${state.time}`);
+        const dataFmt = d.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+        document.getElementById("success-msg").textContent =
+          `${state.service.nome} — ${dataFmt} às ${state.time}`;
+        showStep(5);
+      } catch {
+        showErr("err-4", "Erro de conexão. Tente novamente.");
+      }
+    }
+
+    function reiniciar() {
+      state.client = null;
+      state.service = null;
+      state.date = "";
+      state.time = "";
+      document.getElementById("input-nome").value = "";
+      document.getElementById("wrap-nome").classList.add("hidden");
+      document.getElementById("btn-continuar").textContent = "Continuar →";
+      document.getElementById("btn-step2-next").disabled = true;
+      showStep(1);
+      const tel = localStorage.getItem("barber_telefone");
+      if (tel) document.getElementById("input-telefone").value = tel;
+    }
+
+    // Init
+    const today = new Date().toISOString().slice(0, 10);
+    document.getElementById("input-date").min = today;
+    const savedTel = localStorage.getItem("barber_telefone");
+    if (savedTel) {
+      document.getElementById("input-telefone").value = savedTel;
+    }
+    showStep(1);
+  </script>
+</body>
+</html>
