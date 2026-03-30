@@ -63,4 +63,31 @@ CREATE INDEX IF NOT EXISTS idx_appointments_data ON appointments(data_hora);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_client ON subscriptions(client_id);
 CREATE INDEX IF NOT EXISTS idx_payments_client ON payments(client_id);
 CREATE INDEX IF NOT EXISTS idx_payments_comp ON payments(competencia);
+
+CREATE TABLE IF NOT EXISTS services (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  nome TEXT NOT NULL,
+  preco REAL NOT NULL DEFAULT 0,
+  duracao_minutos INTEGER NOT NULL DEFAULT 30,
+  ativo INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_services_ativo ON services(ativo);
 `);
+
+// Seeds de serviços — insere só se a tabela estiver vazia
+const serviceCount = db.prepare("SELECT COUNT(*) AS n FROM services").get().n;
+if (serviceCount === 0) {
+  const insertService = db.prepare(
+    "INSERT INTO services (nome, preco, duracao_minutos) VALUES (?, ?, ?)"
+  );
+  const seedServices = db.transaction(() => {
+    insertService.run("Corte", 35.00, 30);
+    insertService.run("Barba", 25.00, 20);
+    insertService.run("Corte + Barba", 55.00, 50);
+    insertService.run("Corte Infantil", 30.00, 25);
+    insertService.run("Pigmentação", 45.00, 40);
+  });
+  seedServices();
+}
