@@ -5,6 +5,7 @@ import { viewFinance } from "./views/finance.js";
 import { viewAppointments } from "./views/appointments.js";
 import { viewSubscriptions } from "./views/subscriptions.js";
 import { viewPayments } from "./views/payments.js";
+import { viewServices } from "./views/services.js";
 import { escapeHtml } from "./utils.js";
 
 function parseHash() {
@@ -40,6 +41,9 @@ async function render() {
     } else if (parts[0] === "payments") {
       title = "Pagamento PIX (simulado)";
       body = await viewPayments();
+    } else if (parts[0] === "services") {
+      title = "Serviços";
+      body = await viewServices();
     } else {
       title = "Não encontrado";
       body = `<p class="text-slate-400">Rota não encontrada. Use o menu.</p>`;

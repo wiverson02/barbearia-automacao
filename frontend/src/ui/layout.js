@@ -26,6 +26,7 @@ export async function layout({ title, body }) {
     { href: "#/appointments",  label: `Agendamentos${badge}`, raw: true },
     { href: "#/subscriptions", label: "Assinaturas"         },
     { href: "#/payments",      label: "PIX simulado"        },
+    { href: "#/services",      label: "Serviços"            },
   ];
 
   const links = nav

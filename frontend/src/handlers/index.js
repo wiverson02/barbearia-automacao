@@ -22,6 +22,13 @@ import {
   handleCancelAppointment,
 } from "./appointments.js";
 import { handleCreatePayment } from "./payments.js";
+import {
+  handleCreateService,
+  handleUpdateService,
+  handleEditService,
+  handleCancelEditService,
+  handleToggleService,
+} from "./services.js";
 
 document.addEventListener("submit", async (e) => {
   const form = e.target;
@@ -43,6 +50,8 @@ document.addEventListener("submit", async (e) => {
     else if (kind === "create-subscription")  await handleCreateSubscription(e);
     else if (kind === "update-subscription")  await handleUpdateSubscription(e);
     else if (kind === "create-payment")       await handleCreatePayment(e);
+    else if (kind === "create-service")       await handleCreateService(e);
+    else if (kind === "update-service")       await handleUpdateService(e);
   } catch (err) {
     toast.error(err.message || String(err));
   } finally {
@@ -68,6 +77,9 @@ document.addEventListener("click", async (e) => {
     else if (action === "filter-appointments")           handleFilterAppointments(btn);
     else if (action === "complete-appointment")      await handleCompleteAppointment(btn);
     else if (action === "cancel-appointment")        await handleCancelAppointment(btn);
+    else if (action === "edit-service")              await handleEditService(btn);
+    else if (action === "cancel-edit-service")           handleCancelEditService();
+    else if (action === "toggle-service")            await handleToggleService(btn);
   } catch (err) {
     toast.error(err.message || String(err));
   }
