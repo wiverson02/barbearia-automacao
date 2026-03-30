@@ -12,7 +12,12 @@ import {
   handleEditSubscription,
   handleCancelEditSubscription,
 } from "./subscriptions.js";
-import { handleCreateAppointment } from "./appointments.js";
+import {
+  handleCreateAppointment,
+  handleUpdateAppointment,
+  handleEditAppointment,
+  handleCancelEditAppointment,
+} from "./appointments.js";
 import { handleCreatePayment } from "./payments.js";
 
 document.addEventListener("submit", async (e) => {
@@ -31,6 +36,7 @@ document.addEventListener("submit", async (e) => {
     if (kind === "create-client")             await handleCreateClient(e);
     else if (kind === "update-client")        await handleUpdateClient(e);
     else if (kind === "create-appointment")   await handleCreateAppointment(e);
+    else if (kind === "update-appointment")   await handleUpdateAppointment(e);
     else if (kind === "create-subscription")  await handleCreateSubscription(e);
     else if (kind === "update-subscription")  await handleUpdateSubscription(e);
     else if (kind === "create-payment")       await handleCreatePayment(e);
@@ -54,6 +60,8 @@ document.addEventListener("click", async (e) => {
     else if (action === "edit-subscription")         await handleEditSubscription(btn);
     else if (action === "cancel-edit-subscription")      handleCancelEditSubscription();
     else if (action === "delete-client")             await handleDeleteClient(btn);
+    else if (action === "edit-appointment")          await handleEditAppointment(btn);
+    else if (action === "cancel-edit-appointment")       handleCancelEditAppointment();
   } catch (err) {
     toast.error(err.message || String(err));
   }
