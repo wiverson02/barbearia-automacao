@@ -14,6 +14,9 @@ router.post("/", (req, res) => {
   if (!nome || String(nome).trim() === "") {
     return res.status(400).json({ error: "nome é obrigatório" });
   }
+  if (!telefone || String(telefone).trim() === "") {
+    return res.status(400).json({ error: "telefone é obrigatório" });
+  }
   const info = db
     .prepare(
       "INSERT INTO clients (nome, telefone, observacoes) VALUES (?, ?, ?)"
@@ -71,6 +74,12 @@ router.get("/:id", (req, res) => {
 
 router.put("/:id", (req, res) => {
   const { nome, telefone, observacoes } = req.body || {};
+  if (!nome || String(nome).trim() === "") {
+    return res.status(400).json({ error: "nome é obrigatório" });
+  }
+  if (!telefone || String(telefone).trim() === "") {
+    return res.status(400).json({ error: "telefone é obrigatório" });
+  }
   const existing = db.prepare("SELECT * FROM clients WHERE id = ?").get(req.params.id);
   if (!existing) return res.status(404).json({ error: "Cliente não encontrado" });
   db.prepare(

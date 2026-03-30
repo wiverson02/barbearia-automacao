@@ -8,9 +8,13 @@ function refresh() {
 export async function handleCreateClient(e) {
   const form = e.target;
   const fd = new FormData(form);
+  const nome = String(fd.get("nome") ?? "").trim();
+  const telefone = String(fd.get("telefone") ?? "").trim();
+  if (!nome) throw new Error("Nome é obrigatório");
+  if (!telefone) throw new Error("Telefone é obrigatório");
   const body = {
-    nome: fd.get("nome"),
-    telefone: fd.get("telefone") || null,
+    nome,
+    telefone,
     observacoes: fd.get("observacoes") || null,
   };
   await api("/api/clients", { method: "POST", body });
@@ -24,9 +28,13 @@ export async function handleUpdateClient(e) {
   const fd = new FormData(form);
   const id = fd.get("id");
   if (!id) throw new Error("Cliente inválido");
+  const nome = String(fd.get("nome") ?? "").trim();
+  const telefone = String(fd.get("telefone") ?? "").trim();
+  if (!nome) throw new Error("Nome é obrigatório");
+  if (!telefone) throw new Error("Telefone é obrigatório");
   const body = {
-    nome: fd.get("nome"),
-    telefone: fd.get("telefone") || null,
+    nome,
+    telefone,
     observacoes: fd.get("observacoes") || null,
   };
   await api(`/api/clients/${id}`, { method: "PUT", body });
