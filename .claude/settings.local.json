@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash \"C:/Users/55869/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.6/skills/brainstorming/scripts/start-server.sh\" --project-dir \"C:/Users/55869/Documents/BARBER ELIAS/barbearia-automacao\")",
+      "Bash(cd:*)",
+      "Bash(ls -la /tmp/*.js)",
+      "Bash(printf 'console.log\\(\"\"test\"\"\\);')",
+      "Bash(node /tmp/test.js)",
+      "Bash(node:*)",
+      "Bash(ditto /dev/null \"/c/Users/55869/Documents/BARBER ELIAS/barbearia-automacao/frontend/src/handlers.js.new\")",
+      "Bash(python3:*)"
+    ]
+  }
+}

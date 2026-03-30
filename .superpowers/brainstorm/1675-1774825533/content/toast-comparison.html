@@ -1,0 +1,109 @@
+<h2>Sistema de notificações: Alert vs Toast</h2>
+<p class="subtitle">Veja a diferença entre o comportamento atual e o proposto</p>
+
+<div class="split" style="margin-top: 1.5rem; gap: 1.5rem;">
+
+  <!-- Atual: Alert -->
+  <div class="mockup">
+    <div class="mockup-header">❌ Atual — <code>alert()</code></div>
+    <div class="mockup-body" style="background: #0f172a; padding: 1.25rem; border-radius: 6px;">
+      <div style="background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 1rem; margin-bottom: 0.75rem;">
+        <div style="color: #94a3b8; font-size: 11px; text-transform: uppercase; margin-bottom: 4px;">Dashboard</div>
+        <div style="color: white; font-size: 15px; font-weight: 600;">Barbearia Elias</div>
+      </div>
+      <!-- Overlay simulando alert nativo -->
+      <div style="position: relative; margin-top: 0.5rem;">
+        <div style="background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 1rem; filter: blur(1.5px); opacity: 0.4;">
+          <div style="height: 12px; background: #334155; border-radius: 4px; margin-bottom: 8px; width: 60%"></div>
+          <div style="height: 10px; background: #334155; border-radius: 4px; width: 80%"></div>
+        </div>
+        <div style="position: absolute; inset: -20px; display: flex; align-items: center; justify-content: center;">
+          <div style="background: #e2e8f0; border: 2px solid #94a3b8; border-radius: 8px; padding: 1.25rem 1.5rem; min-width: 200px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); text-align: center;">
+            <div style="color: #1e293b; font-size: 13px; margin-bottom: 12px; font-weight: 500;">localhost:5173 diz:</div>
+            <div style="color: #dc2626; font-size: 12px; margin-bottom: 14px; font-family: monospace; background: #fee2e2; padding: 6px 8px; border-radius: 4px;">Erro ao salvar: nome é obrigatório</div>
+            <button style="background: #3b82f6; color: white; border: none; padding: 5px 18px; border-radius: 4px; font-size: 12px; cursor: pointer;">OK</button>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top: 4rem; padding: 0.5rem; background: #fee2e2; border-radius: 6px; border: 1px solid #fca5a5;">
+        <p style="color: #b91c1c; font-size: 11px; margin: 0;">⚠️ Bloqueia toda a página — o usuário precisa clicar OK para continuar</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Proposto: Toast -->
+  <div class="mockup">
+    <div class="mockup-header">✅ Proposto — Toast flutuante</div>
+    <div class="mockup-body" style="background: #0f172a; padding: 1.25rem; border-radius: 6px; position: relative; min-height: 220px;">
+      <div style="background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 1rem; margin-bottom: 0.75rem;">
+        <div style="color: #94a3b8; font-size: 11px; text-transform: uppercase; margin-bottom: 4px;">Dashboard</div>
+        <div style="color: white; font-size: 15px; font-weight: 600;">Barbearia Elias</div>
+      </div>
+      <div style="background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 1rem;">
+        <div style="height: 12px; background: #334155; border-radius: 4px; margin-bottom: 8px; width: 60%"></div>
+        <div style="height: 10px; background: #334155; border-radius: 4px; width: 80%"></div>
+      </div>
+      <!-- Toast stack no canto inferior direito -->
+      <div style="position: absolute; bottom: 1rem; right: 1rem; display: flex; flex-direction: column; gap: 8px; width: 200px;">
+        <div style="background: #15803d; color: white; border-radius: 8px; padding: 10px 14px; font-size: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); display: flex; align-items: center; gap: 8px;">
+          <span>✅</span><span>Cliente salvo com sucesso!</span>
+        </div>
+        <div style="background: #b91c1c; color: white; border-radius: 8px; padding: 10px 14px; font-size: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); display: flex; align-items: center; gap: 8px;">
+          <span>❌</span><span>Nome é obrigatório</span>
+        </div>
+      </div>
+      <div style="margin-top: 1rem; padding: 0.5rem; background: #d1fae5; border-radius: 6px; border: 1px solid #6ee7b7;">
+        <p style="color: #065f46; font-size: 11px; margin: 0;">✅ Não bloqueia a página — some sozinho após 3 segundos</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top: 1.5rem;">
+  <h3>Três tipos de toast que vamos criar</h3>
+  <p class="subtitle">Cada um com cor e ícone diferente para comunicar o contexto</p>
+  <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 1rem;">
+
+    <div style="background: #15803d; color: white; border-radius: 8px; padding: 12px 18px; font-size: 13px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); max-width: 380px;">
+      <span style="font-size: 18px;">✅</span>
+      <div>
+        <div style="font-weight: 600;">Sucesso</div>
+        <div style="font-size: 11px; opacity: 0.85;">Cliente salvo com sucesso!</div>
+      </div>
+      <span style="margin-left: auto; opacity: 0.6; font-size: 18px; cursor: pointer;">×</span>
+    </div>
+
+    <div style="background: #b91c1c; color: white; border-radius: 8px; padding: 12px 18px; font-size: 13px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); max-width: 380px;">
+      <span style="font-size: 18px;">❌</span>
+      <div>
+        <div style="font-weight: 600;">Erro</div>
+        <div style="font-size: 11px; opacity: 0.85;">Nome é obrigatório</div>
+      </div>
+      <span style="margin-left: auto; opacity: 0.6; font-size: 18px; cursor: pointer;">×</span>
+    </div>
+
+    <div style="background: #b45309; color: white; border-radius: 8px; padding: 12px 18px; font-size: 13px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); max-width: 380px;">
+      <span style="font-size: 18px;">⚠️</span>
+      <div>
+        <div style="font-weight: 600;">Aviso</div>
+        <div style="font-size: 11px; opacity: 0.85;">Assinatura sem data de fim definida</div>
+      </div>
+      <span style="margin-left: auto; opacity: 0.6; font-size: 18px; cursor: pointer;">×</span>
+    </div>
+
+  </div>
+</div>
+
+<div style="margin-top: 1.5rem; background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 1.25rem;">
+  <h3 style="margin-top: 0; color: #f1f5f9;">Como vai funcionar no código</h3>
+  <div style="font-family: monospace; font-size: 12px; background: #0f172a; padding: 1rem; border-radius: 6px; line-height: 1.8; color: #94a3b8;">
+    <span style="color: #64748b;">// Antes (handlers.js — linha 149)</span><br>
+    <span style="color: #fca5a5;">alert</span>(<span style="color: #86efac;">"Erro ao salvar"</span>);<br><br>
+    <span style="color: #64748b;">// Depois (qualquer arquivo)</span><br>
+    <span style="color: #93c5fd;">import</span> { toast } <span style="color: #93c5fd;">from</span> <span style="color: #86efac;">"../ui/toast.js"</span>;<br>
+    toast.<span style="color: #fde68a;">error</span>(<span style="color: #86efac;">"Erro ao salvar"</span>);<br>
+    toast.<span style="color: #6ee7b7;">success</span>(<span style="color: #86efac;">"Cliente salvo!"</span>);<br>
+    toast.<span style="color: #fcd34d;">warn</span>(<span style="color: #86efac;">"Aviso: campo vazio"</span>);
+  </div>
+</div>
