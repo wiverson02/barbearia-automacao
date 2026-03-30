@@ -1,6 +1,12 @@
 import { api } from "../api.js";
 import { toast } from "../ui/toast.js";
 
+export let activeFilter = "today";
+
+export function setActiveFilter(f) {
+  activeFilter = f;
+}
+
 function refresh() {
   document.dispatchEvent(new CustomEvent("spa:refresh"));
 }
@@ -79,5 +85,24 @@ export async function handleCreateAppointment(e) {
   await api("/api/appointments", { method: "POST", body });
   form.reset();
   toast.success("Agendamento criado!");
+  refresh();
+}
+
+export function handleFilterAppointments(btn) {
+  setActiveFilter(btn.dataset.filter);
+  refresh();
+}
+
+export async function handleCompleteAppointment(btn) {
+  const id = btn.dataset.id;
+  await api(`/api/appointments/${id}`, { method: "PUT", body: { status: "concluido" } });
+  toast.success("Agendamento concluído!");
+  refresh();
+}
+
+export async function handleCancelAppointment(btn) {
+  const id = btn.dataset.id;
+  await api(`/api/appointments/${id}`, { method: "PUT", body: { status: "cancelado" } });
+  toast.success("Agendamento cancelado.");
   refresh();
 }
