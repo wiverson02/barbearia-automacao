@@ -21,6 +21,8 @@ router.get("/summary", (_req, res) => {
     .prepare("SELECT * FROM subscriptions WHERE ativo = 1")
     .all();
 
+  const esperadoMes = subsAtivas.reduce((acc, s) => acc + (s.valor_mensal ?? 0), 0);
+
   const paymentsAll = db
     .prepare(`SELECT subscription_id, competencia, status FROM payments`)
     .all();
@@ -55,7 +57,8 @@ router.get("/summary", (_req, res) => {
   res.json({
     competenciaAtual: comp,
     totalClientes,
-    recebidoMes: recebidoMes,
+    recebidoMes,
+    esperadoMes,
     assinaturasAtivas: subsAtivas.length,
     clientesComPendenciaNesteMes: clientesComPendenciaMes,
     clientesComAtrasoEmAlgumMes: clientesComAtraso.size,
