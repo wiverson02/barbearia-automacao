@@ -34,9 +34,8 @@ Abra o endereço que o Vite mostrar (geralmente `http://localhost:5173`). O prox
 - Pagamentos PIX **simulados** (competência `YYYY-MM`, txId/comprovante opcionais)
 - Painel financeiro por cliente (`#/clients/<id>/finance`) com **pago / pendente / atrasado**
 - Dashboard com resumo geral
-
-## Próximos passos (aprendizado)
-
-- Tela para **editar** assinatura e cliente sem usar só a API
-- Validações e mensagens de sucesso (toast) no lugar de `alert`
-- Autenticação simples, se um dia for para produção
+- Toasts de sucesso e erro (substituem `alert()`)
+- Modal de confirmação para exclusão (bottom sheet)
+- Validações de campos obrigatórios (clientes, agendamentos, pagamentos)
+- Link ativo destacado no menu de navegação
+- Handlers organizados por domínio (`handlers/clients.js`, etc.)
