@@ -13,7 +13,7 @@ export async function viewClients() {
         <td class="px-3 py-2 text-right space-x-2">
           <button type="button" data-action="edit-client" data-id="${c.id}" class="text-xs text-sky-400 hover:underline">Editar</button>
           <a class="text-amber-400 underline" href="#/clients/${c.id}/finance">Financeiro</a>
-          <button type="button" data-action="delete-client" data-id="${c.id}" class="text-xs text-rose-400 hover:underline">Excluir</button>
+          <button type="button" data-action="delete-client" data-id="${c.id}" data-name="${escapeHtml(c.nome)}" class="text-xs text-rose-400 hover:underline">Excluir</button>
         </td>
       </tr>`
     )
