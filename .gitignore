@@ -5,3 +5,9 @@ backend/data/*.db-wal
 dist/
 .DS_Store
 .superpowers/
+
+# Variáveis de ambiente (contêm credenciais)
+.env
+env
+frontend/.env
+backend/.env
