@@ -19,6 +19,9 @@ export async function viewAppointments() {
         <td class="px-3 py-2">${escapeHtml(a.data_hora)}</td>
         <td class="px-3 py-2">${escapeHtml(a.servico || "")}</td>
         <td class="px-3 py-2">${escapeHtml(a.status)}</td>
+        <td class="px-3 py-2 text-right">
+          <button type="button" data-action="edit-appointment" data-id="${a.id}" class="text-xs text-sky-400 hover:underline">Editar</button>
+        </td>
       </tr>`
     )
     .join("");
@@ -61,6 +64,52 @@ export async function viewAppointments() {
           </label>
           <button type="submit" class="rounded-lg bg-amber-500 px-4 py-2 font-medium text-slate-950 hover:bg-amber-400">Salvar</button>
         </form>
+
+        <div id="edit-appointment-wrap" class="mt-6 hidden rounded-xl border border-sky-900/40 bg-slate-950/50 p-4">
+          <h2 class="text-base font-semibold text-sky-200">Editar agendamento</h2>
+          <form data-form="update-appointment" class="mt-4 grid gap-3">
+            <input type="hidden" name="id" />
+            <label class="grid gap-1 text-sm">
+              <span class="text-slate-400">Cliente</span>
+              <select name="clientId" class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2">
+                <option value="">Selecione…</option>
+                ${options}
+              </select>
+            </label>
+            <label class="grid gap-1 text-sm">
+              <span class="text-slate-400">Data e hora (local)</span>
+              <input name="dataHora" type="datetime-local" class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2" />
+            </label>
+            <label class="grid gap-1 text-sm">
+              <span class="text-slate-400">Serviço (livre)</span>
+              <input name="servico" class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2" />
+            </label>
+            <label class="grid gap-1 text-sm">
+              <span class="text-slate-400">Observações</span>
+              <textarea name="observacoes" rows="2" class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2"></textarea>
+            </label>
+            <label class="grid gap-1 text-sm">
+              <span class="text-slate-400">Duração (min, opcional)</span>
+              <input name="duracaoMinutos" type="number" min="1" class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2" />
+            </label>
+            <label class="grid gap-1 text-sm">
+              <span class="text-slate-400">Status</span>
+              <select name="status" class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2">
+                <option value="agendado">agendado</option>
+                <option value="concluido">concluido</option>
+                <option value="cancelado">cancelado</option>
+              </select>
+            </label>
+            <div class="flex flex-wrap gap-2">
+              <button type="submit" class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-medium text-slate-950 hover:bg-amber-400">
+                Salvar alterações
+              </button>
+              <button type="button" data-action="cancel-edit-appointment" class="rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800">
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
       </section>
 
       <section class="rounded-xl border border-slate-800 bg-slate-900/40 p-4">
@@ -73,9 +122,10 @@ export async function viewAppointments() {
                 <th class="px-3 py-2">Quando</th>
                 <th class="px-3 py-2">Serviço</th>
                 <th class="px-3 py-2">Status</th>
+                <th class="px-3 py-2 text-right">Ações</th>
               </tr>
             </thead>
-            <tbody>${rows || `<tr><td class="px-3 py-6 text-slate-500" colspan="4">Nenhum agendamento.</td></tr>`}</tbody>
+            <tbody>${rows || `<tr><td class="px-3 py-6 text-slate-500" colspan="5">Nenhum agendamento.</td></tr>`}</tbody>
           </table>
         </div>
       </section>
