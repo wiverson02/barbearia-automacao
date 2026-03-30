@@ -1,5 +1,6 @@
 import { api } from "../api.js";
 import { toast } from "../ui/toast.js";
+import { modal } from "../ui/modal.js";
 
 function refresh() {
   document.dispatchEvent(new CustomEvent("spa:refresh"));
@@ -67,7 +68,9 @@ export function handleCancelEditClient() {
 
 export async function handleDeleteClient(btn) {
   const id = btn.dataset.id;
-  if (!confirm("Excluir este cliente?")) return;
+  const name = btn.dataset.name || "este cliente";
+  const confirmed = await modal.confirm(`Excluir ${name}?`);
+  if (!confirmed) return;
   await api(`/api/clients/${id}`, { method: "DELETE" });
   toast.success("Cliente excluído.");
   refresh();
