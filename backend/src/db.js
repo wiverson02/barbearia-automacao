@@ -7,7 +7,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dataDir = path.join(__dirname, "..", "data");
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
-const dbPath = path.join(dataDir, "barber.db");
+const dbPath = process.env.DATABASE_URL
+  ? path.resolve(process.env.DATABASE_URL)
+  : path.join(dataDir, "barber.db");
 export const db = new Database(dbPath);
 
 db.pragma("journal_mode = WAL");

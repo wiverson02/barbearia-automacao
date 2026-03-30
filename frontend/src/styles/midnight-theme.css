@@ -1,0 +1,99 @@
+/* ============================================================
+   MIDNIGHT ATELIER — Design System
+   ============================================================ */
+
+:root {
+  /* Background layers */
+  --bg-base:        #0d0e17;
+  --bg-surface:     #13141f;
+  --bg-elevated:    #181924;
+  --bg-overlay:     #1e1f2e;
+
+  /* Sidebar */
+  --sidebar-bg:     #181924;
+  --sidebar-border: #242532;
+
+  /* Text */
+  --text-primary:   #f1effd;
+  --text-secondary: #abaab7;
+  --text-muted:     #6b6a7a;
+
+  /* Accent palette */
+  --accent-blue:    #85adff;
+  --accent-red:     #ff716c;
+  --accent-purple:  #ac8aff;
+  --accent-green:   #58e7ab;
+  --accent-yellow:  #f9d26a;
+
+  /* Borders */
+  --border-subtle:  #242532;
+  --border-default: #2e2f42;
+
+  /* Typography */
+  --font-display: 'Manrope', sans-serif;
+  --font-body:    'Inter', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+}
+
+/* Base reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Cards ---- */
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.card-title {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 0 0 0.5rem;
+}
+
+.card-value {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2rem;
+  line-height: 1;
+  margin: 0;
+}
+
+/* ---- Badges ---- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.badge-blue   { background: rgba(133,173,255,0.12); color: var(--accent-blue); }
+.badge-red    { background: rgba(255,113,108,0.12); color: var(--accent-red); }
+.badge-purple { background: rgba(172,138,255,0.12); color: var(--accent-purple); }
+.badge-green  { background: rgba(88,231,171,0.12);  color: var(--accent-green); }
+.badge-yellow { background: rgba(249,210,106,0.12); color: var(--accent-yellow); }
+
+/* ---- Nav link active ---- */
+.nav-link-active {
+  border-left: 3px solid var(--accent-blue);
+  background: var(--sidebar-border);
+}
