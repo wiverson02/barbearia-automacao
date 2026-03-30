@@ -8,9 +8,13 @@ function refresh() {
 export async function handleCreateSubscription(e) {
   const form = e.target;
   const fd = new FormData(form);
+  const clientId = fd.get("clientId");
+  const valorMensal = Number(String(fd.get("valorMensal")).replace(",", "."));
+  if (!clientId || Number(clientId) <= 0) throw new Error("Selecione um cliente");
+  if (!valorMensal || valorMensal <= 0) throw new Error("Informe um valor mensal válido");
   const body = {
-    clientId: Number(fd.get("clientId")),
-    valorMensal: Number(String(fd.get("valorMensal")).replace(",", ".")),
+    clientId: Number(clientId),
+    valorMensal,
     startDate: fd.get("startDate"),
     endDate: fd.get("endDate") || null,
     ativo: fd.get("ativo") === "on",
@@ -26,9 +30,11 @@ export async function handleUpdateSubscription(e) {
   const fd = new FormData(form);
   const id = fd.get("id");
   if (!id) throw new Error("Assinatura inválida");
+  const valorMensal = Number(String(fd.get("valorMensal")).replace(",", "."));
+  if (!valorMensal || valorMensal <= 0) throw new Error("Informe um valor mensal válido");
   const endRaw = fd.get("endDate");
   const body = {
-    valorMensal: Number(String(fd.get("valorMensal")).replace(",", ".")),
+    valorMensal,
     startDate: fd.get("startDate"),
     endDate: endRaw && String(endRaw).trim() ? endRaw : null,
     ativo: fd.get("ativo") === "on",
