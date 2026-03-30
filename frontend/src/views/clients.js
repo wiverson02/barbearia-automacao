@@ -7,7 +7,7 @@ export async function viewClients() {
   const rows = clients
     .map(
       (c) => `
-      <tr class="border-t border-slate-800">
+      <tr class="border-t border-slate-800" data-name="${escapeHtml(c.nome)}">
         <td class="px-3 py-2">${escapeHtml(c.nome)}</td>
         <td class="px-3 py-2 text-slate-400">${escapeHtml(c.telefone || "")}</td>
         <td class="px-3 py-2 text-right space-x-2">
@@ -72,6 +72,13 @@ export async function viewClients() {
 
       <section class="rounded-xl border border-slate-800 bg-slate-900/40 p-4">
         <h2 class="text-base font-semibold text-white">Lista</h2>
+        <input
+          id="client-search"
+          type="text"
+          placeholder="Buscar por nome…"
+          oninput="filterClients(this.value)"
+          class="mt-3 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white placeholder-slate-500"
+        />
         <div class="mt-4 overflow-x-auto">
           <table class="w-full text-left text-sm">
             <thead class="text-xs uppercase text-slate-500">
@@ -81,9 +88,17 @@ export async function viewClients() {
                 <th class="px-3 py-2 text-right">Ações</th>
               </tr>
             </thead>
-            <tbody>${rows || `<tr><td class="px-3 py-6 text-slate-500" colspan="3">Nenhum cliente ainda.</td></tr>`}</tbody>
+            <tbody id="clients-tbody">${rows || `<tr><td class="px-3 py-6 text-slate-500" colspan="3">Nenhum cliente ainda.</td></tr>`}</tbody>
           </table>
         </div>
+        <script>
+          function filterClients(q) {
+            const term = q.toLowerCase();
+            document.querySelectorAll('#clients-tbody tr[data-name]').forEach(tr => {
+              tr.style.display = tr.dataset.name.toLowerCase().includes(term) ? '' : 'none';
+            });
+          }
+        </script>
       </section>
     </div>
   `;
