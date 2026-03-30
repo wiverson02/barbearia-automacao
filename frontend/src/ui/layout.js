@@ -1,14 +1,31 @@
 import { escapeHtml } from "../utils.js";
 
-export function layout({ title, body }) {
+export async function layout({ title, body }) {
   const currentHash = window.location.hash || "#/";
 
+  // Buscar contagem de agendamentos de hoje para o badge
+  const today = new Date().toISOString().slice(0, 10);
+  let badgeCount = 0;
+  try {
+    const res = await fetch(`/api/appointments?from=${today}T00:00:00&to=${today}T23:59:59`);
+    if (res.ok) {
+      const rows = await res.json();
+      badgeCount = rows.filter(a => a.status === "agendado").length;
+    }
+  } catch {
+    // silencioso — badge simplesmente não aparece
+  }
+
+  const badge = badgeCount > 0
+    ? ` <span style="background:#f59e0b;color:#0f172a;border-radius:9999px;padding:1px 7px;font-size:0.7rem;font-weight:700;margin-left:4px;">${badgeCount}</span>`
+    : "";
+
   const nav = [
-    { href: "#/",              label: "Dashboard"    },
-    { href: "#/clients",       label: "Clientes"     },
-    { href: "#/appointments",  label: "Agendamentos" },
-    { href: "#/subscriptions", label: "Assinaturas"  },
-    { href: "#/payments",      label: "PIX simulado" },
+    { href: "#/",              label: "Dashboard"           },
+    { href: "#/clients",       label: "Clientes"            },
+    { href: "#/appointments",  label: `Agendamentos${badge}`, raw: true },
+    { href: "#/subscriptions", label: "Assinaturas"         },
+    { href: "#/payments",      label: "PIX simulado"        },
   ];
 
   const links = nav
@@ -20,7 +37,8 @@ export function layout({ title, body }) {
       const cls = isActive
         ? "rounded-lg px-3 py-2 text-sm bg-slate-800 text-amber-400"
         : "rounded-lg px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white";
-      return `<a href="${n.href}" class="${cls}">${n.label}</a>`;
+      const label = n.raw ? n.label : escapeHtml(n.label);
+      return `<a href="${n.href}" class="${cls}">${label}</a>`;
     })
     .join("");
 

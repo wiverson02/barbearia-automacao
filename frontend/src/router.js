@@ -48,7 +48,7 @@ async function render() {
     body = `<p class="text-rose-400">${escapeHtml(String(e.message || e))}</p>`;
   }
 
-  rootEl.innerHTML = layout({ title, body });
+  rootEl.innerHTML = await layout({ title, body });
 }
 
 export function mountRouter(root) {
