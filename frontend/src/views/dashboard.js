@@ -6,7 +6,7 @@ export async function viewDashboard() {
 
   return `
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      ${card("Competência atual", s.competenciaAtual)}
+      ${card("Competência atual", formatCompetencia(s.competenciaAtual))}
       ${card("Total de clientes", String(s.totalClientes))}
       ${card("Recebido no mês (PIX pago)", formatMoney(s.recebidoMes))}
       ${card("Assinaturas ativas", String(s.assinaturasAtivas))}
@@ -17,6 +17,14 @@ export async function viewDashboard() {
       Dica: cadastre clientes, crie uma assinatura e registre pagamentos em <a class="text-amber-400 underline" href="#/payments">PIX simulado</a>.
     </p>
   `;
+}
+
+function formatCompetencia(valor) {
+  if (!valor) return valor;
+  const [ano, mes] = valor.split("-");
+  const data = new Date(Number(ano), Number(mes) - 1, 1);
+  return data.toLocaleDateString("pt-BR", { month: "long", year: "numeric" })
+    .replace(/^\w/, (c) => c.toUpperCase());
 }
 
 function card(title, value) {
