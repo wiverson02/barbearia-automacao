@@ -21,6 +21,12 @@ document.addEventListener("submit", async (e) => {
   const kind = form.dataset.form;
   if (!kind) return;
   e.preventDefault();
+  const btn = form.querySelector('[type="submit"]');
+  const originalText = btn ? btn.textContent : null;
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "Salvando...";
+  }
   try {
     if (kind === "create-client")             await handleCreateClient(e);
     else if (kind === "update-client")        await handleUpdateClient(e);
@@ -30,6 +36,11 @@ document.addEventListener("submit", async (e) => {
     else if (kind === "create-payment")       await handleCreatePayment(e);
   } catch (err) {
     toast.error(err.message || String(err));
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
   }
 });
 
