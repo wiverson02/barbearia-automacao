@@ -1,10 +1,34 @@
 import { api } from "../api.js";
 import { escapeHtml } from "../utils.js";
+import { activeFilter } from "../handlers/appointments.js";
 
 export async function viewAppointments() {
+  const today = new Date().toISOString().slice(0, 10);
+
+  let fromParam = "";
+  let toParam = "";
+  if (activeFilter === "today") {
+    fromParam = `${today}T00:00:00`;
+    toParam = `${today}T23:59:59`;
+  } else if (activeFilter === "week") {
+    const d = new Date();
+    const dayOfWeek = d.getDay();
+    const diffToMonday = (dayOfWeek + 6) % 7;
+    const monday = new Date(d);
+    monday.setDate(d.getDate() - diffToMonday);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    fromParam = `${monday.toISOString().slice(0, 10)}T00:00:00`;
+    toParam = `${sunday.toISOString().slice(0, 10)}T23:59:59`;
+  }
+
+  const appointmentsUrl = fromParam
+    ? `/api/appointments?from=${fromParam}&to=${toParam}`
+    : "/api/appointments";
+
   const [clients, appointments] = await Promise.all([
     api("/api/clients"),
-    api("/api/appointments"),
+    api(appointmentsUrl),
   ]);
 
   const options = clients
@@ -19,12 +43,25 @@ export async function viewAppointments() {
         <td class="px-3 py-2">${escapeHtml(a.data_hora)}</td>
         <td class="px-3 py-2">${escapeHtml(a.servico || "")}</td>
         <td class="px-3 py-2">${escapeHtml(a.status)}</td>
-        <td class="px-3 py-2 text-right">
+        <td class="px-3 py-2 text-right space-x-2">
           <button type="button" data-action="edit-appointment" data-id="${a.id}" class="text-xs text-sky-400 hover:underline">Editar</button>
+          ${a.status === "agendado" ? `
+            <button type="button" data-action="complete-appointment" data-id="${a.id}" class="text-xs text-emerald-400 hover:underline">✓ Concluir</button>
+            <button type="button" data-action="cancel-appointment" data-id="${a.id}" class="text-xs text-rose-400 hover:underline">✕ Cancelar</button>
+          ` : ""}
         </td>
       </tr>`
     )
     .join("");
+
+  const filterLabels = { today: "Hoje", week: "Esta semana", all: "Todos" };
+  const filterBtns = ["today", "week", "all"].map(f => {
+    const isActive = activeFilter === f;
+    const cls = isActive
+      ? "rounded-lg px-3 py-1.5 text-xs font-medium bg-amber-500 text-slate-950"
+      : "rounded-lg px-3 py-1.5 text-xs font-medium border border-slate-700 text-slate-300 hover:bg-slate-800";
+    return `<button type="button" data-action="filter-appointments" data-filter="${f}" class="${cls}">${filterLabels[f]}</button>`;
+  }).join("");
 
   return `
     <div class="grid gap-8 lg:grid-cols-2">
@@ -114,6 +151,9 @@ export async function viewAppointments() {
 
       <section class="rounded-xl border border-slate-800 bg-slate-900/40 p-4">
         <h2 class="text-base font-semibold text-white">Lista</h2>
+        <div class="mt-3 flex gap-2">
+          ${filterBtns}
+        </div>
         <div class="mt-4 overflow-x-auto">
           <table class="w-full text-left text-sm">
             <thead class="text-xs uppercase text-slate-500">
@@ -132,4 +172,3 @@ export async function viewAppointments() {
     </div>
   `;
 }
-
